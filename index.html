@@ -71,6 +71,13 @@
   }
   input:focus, select:focus, button:focus-visible{outline:2px solid var(--cyan);outline-offset:1px;}
 
+  /* 匯率設定：三個框格（基準幣別 / 轉換幣別 / 匯率數字）大小要一致，
+     所以這裡把數字輸入框改用跟下拉選單相同的字級與內距，不使用放大版的 .amount-input */
+  .rate-editor .amount-input{
+    font-size:15.5px !important;font-weight:700;padding:12px 12px !important;
+    border-width:2px !important;
+  }
+
   /* rate settings — pick a base currency, then edit the other currencies against it */
   .rate-editor{display:flex;flex-direction:column;gap:14px;}
   @media (min-width:480px){
