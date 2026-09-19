@@ -272,6 +272,11 @@
   footer{margin-top:26px;text-align:center;color:var(--text-dim);font-size:11.5px;}
 </style>
 
+<!-- Firebase (Firestore) — powers the shared/live sync so every phone that opens
+     this page sees the same participants/expenses/rates in real time. -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
 <div class="wrap">
   <header class="top">
     <div class="eyebrow">Trip Ledger</div>
@@ -498,31 +503,49 @@
     });
   }
 
+  // Firebase project config (from Firebase Console → Project settings → your web app).
+  // These values aren't secret — access is controlled by the Firestore Security
+  // Rules set in the console, not by hiding this object.
+  var FIREBASE_CONFIG = {
+    apiKey: "AIzaSyDabQIAYAjkO5oZK62Wx3h9K-uAQpJmKIc",
+    authDomain: "boli-trip.firebaseapp.com",
+    projectId: "boli-trip",
+    storageBucket: "boli-trip.firebasestorage.app",
+    messagingSenderId: "624770329107",
+    appId: "1:624770329107:web:5901eaff2348289c2dade6"
+  };
+
   function initCloudSync(){
-    if(!(window.claude && typeof window.claude.use === "function")){
+    if(!(window.firebase && FIREBASE_CONFIG.projectId)){
+      return; // Firebase SDK didn't load (e.g. offline) — app still works from local cache
+    }
+    try{
+      firebase.initializeApp(FIREBASE_CONFIG);
+      dbCap = firebase.firestore();
+      docRef = dbCap.collection("trip").doc("main");
+    }catch(e){
+      docRef = null;
       return;
     }
-    window.claude.use("db").then(function(db){
-      if(!db) return;
-      dbCap = db;
-      docRef = db.doc("trip/main");
-      return docRef.get().then(function(snap){
+    docRef.get().then(function(snap){
+      if(snap.exists && snap.data()){
+        applySharedData(snap.data());
+        renderAll();
+      }else{
+        return docRef.set(sharedSnapshot());
+      }
+    }).then(function(){
+      docRef.onSnapshot(function(snap){
         if(snap.exists && snap.data()){
           applySharedData(snap.data());
+          saveLocalCache();
           renderAll();
-        }else{
-          return docRef.set(sharedSnapshot());
         }
-      }).then(function(){
-        docRef.onSnapshot(function(snap){
-          if(snap.exists && snap.data()){
-            applySharedData(snap.data());
-            saveLocalCache();
-            renderAll();
-          }
-        });
       });
-    }).catch(function(){});
+    }).catch(function(){
+      // offline / rules not open yet — keep working from local cache only
+      docRef = null;
+    });
   }
 
   function toUSD(amount, currency){
