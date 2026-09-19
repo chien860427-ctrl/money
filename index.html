@@ -1,4 +1,5 @@
 <title>旅遊分帳台</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
@@ -52,31 +53,28 @@
   .card h2{font-size:16.5px;margin-bottom:2px;}
   .card .hint{font-size:12.5px;color:var(--text-dim);margin-bottom:14px;}
 
-  /* rates */
+  /* one consistent control size for every input/select in the app — so every
+     box (項目說明、金額、幣別、由誰先付、匯率設定…) is the same height/border,
+     and the font is 16px so mobile Safari never auto-zooms in on focus */
   input[type="number"], input[type="text"], select{
     font:inherit;color:var(--text);background:var(--card);
-    border:1.5px solid var(--line);border-radius:10px;padding:9px 11px;width:100%;
+    border:1.5px solid var(--line);border-radius:10px;
+    padding:13px 14px;width:100%;font-size:16px;line-height:1.3;
     accent-color:var(--cyan);
+    -webkit-appearance:none;appearance:none;
   }
   input[type="number"]{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;}
+  select{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%235C726E'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.148l3.71-3.918a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 12px center;background-size:18px;
+    padding-right:36px;
+  }
 
-  /* the price fields people actually type into — made deliberately larger */
-  .amount-input{
-    font-size:22px !important;font-weight:800;padding:13px 14px !important;
-    border-width:2px !important;
-  }
-  .currency-select{
-    font-size:15.5px !important;font-weight:700;padding:12px 12px !important;
-    border-width:2px !important;
-  }
+  /* the price fields people actually type into — same box size as everything
+     else, just bold/mono so the number still stands out */
+  .amount-input{ font-weight:800; }
+  .currency-select{ font-weight:700; }
   input:focus, select:focus, button:focus-visible{outline:2px solid var(--cyan);outline-offset:1px;}
-
-  /* 匯率設定：三個框格（基準幣別 / 轉換幣別 / 匯率數字）大小要一致，
-     所以這裡把數字輸入框改用跟下拉選單相同的字級與內距，不使用放大版的 .amount-input */
-  .rate-editor .amount-input{
-    font-size:15.5px !important;font-weight:700;padding:12px 12px !important;
-    border-width:2px !important;
-  }
 
   /* rate settings — pick a base currency, then edit the other currencies against it */
   .rate-editor{display:flex;flex-direction:column;gap:14px;}
